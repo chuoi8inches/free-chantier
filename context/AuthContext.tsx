@@ -1,17 +1,10 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Client, Account, ID, Models } from 'react-native-appwrite';
+import React, {createContext, useState, useContext, ReactNode, useEffect} from 'react';
+import { Client, Account, ID, Models} from 'react-native-appwrite';
+import { Alert } from 'react-native';
+import {account} from "@/libs/appwrite";
 
-// Create Appwrite Client
-const client = new Client();
-client
-    .setEndpoint('https://cloud.appwrite.io/v1')
-    .setProject('673fb35f00308b078cf5')
-    .setPlatform('fr.istic.freechantier');
-
-const account = new Account(client);
-
-// Define the shape of the context
+// Define the shape of the authentication context
 interface AuthContextType {
     account: Account;
     user: Models.User<Models.Preferences> | null;
@@ -34,29 +27,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 const currentUser = await account.get();
                 setUser(currentUser);
                 // TODO: Navigate to home screen
+
             }
         } catch (error) {
-            console.error('Login failed:', error);
+            Alert.alert('Login Error', error instanceof Error ? error.message : 'An unknown error occurred');
             throw error;
         }
     };
 
+    // Register method
     const register = async (email: string, password: string, name: string) => {
         try {
+            // Create user account
             await account.create(ID.unique(), email, password, name);
+            // Login after registration
             await login(email, password);
         } catch (error) {
-            console.error('Registration failed:', error);
+            Alert.alert('Registration Error', error instanceof Error ? error.message : 'An unknown error occurred');
             throw error;
         }
     };
 
+    // Logout method
     const logout = async () => {
         try {
             await account.deleteSession('current');
             setUser(null);
         } catch (error) {
-            console.error('Logout failed:', error);
+            Alert.alert('Logout Error', error instanceof Error ? error.message : 'An unknown error occurred');
         }
     };
 
@@ -66,17 +64,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             user,
             login,
             register,
-            logout
+            logout,
         }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-// Custom hook for using the auth context
+// Custom hook to use the auth context
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;

@@ -1,51 +1,76 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from "react-native";
-import React, {useState} from "react";
-import {useAuth} from "@/context/AuthContext";
+import React, { useState } from 'react';
+import {
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Alert,
+    ActivityIndicator
+} from 'react-native';
+import { useAuth } from "@/context/AuthContext";
 
-export const Login = ({navigation}) => {
+export const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [isLogin, setIsLogin] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { user, login, register,logout } = useAuth();
+    const { login, register,logout } = useAuth();
 
     const handleAuthentication = async () => {
+        // Logout if there's an active session
+        if (isLogin) {
+            await logout();
+        }
+        // Input validation
+        if (!email || !password || (!isLogin && !name)) {
+            Alert.alert('Validation Error', 'Please fill in all fields');
+            return;
+        }
+
+        setIsLoading(true);
         try {
             if (isLogin) {
                 await login(email, password);
-                //if login is successful, navigate to home screen
+                // Navigate based on role (you'll need to implement this logic)
                 navigation.navigate('Home');
             } else {
                 await register(email, password, name);
+                // After registration, navigate to home or complete profile
+                navigation.navigate('Home');
             }
         } catch (error) {
-            Alert.alert('Authentication Error', error.message);
+            // Error handling is already done in the AuthContext
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text>
-                {isLogin ? 'Login' : 'Register'}
+            <Text style={styles.title}>
+                {isLogin ? 'Login to Site Management' : 'Register New Account'}
             </Text>
-
-            {user && <Text>Logged in as: {user.name}</Text>}
 
             {!isLogin && (
                 <TextInput
                     style={styles.input}
-                    placeholder="Name"
+                    placeholder="Full Name"
                     value={name}
                     onChangeText={setName}
+                    autoCapitalize="words"
                 />
             )}
 
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder="Email Address"
                 value={email}
                 onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
             />
 
             <TextInput
@@ -54,23 +79,27 @@ export const Login = ({navigation}) => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
             />
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleAuthentication}
-            >
-                <Text>{isLogin ? 'Login' : 'Register'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={logout}
-            >
-                <Text>Logout</Text>
-            </TouchableOpacity>
+            {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleAuthentication}
+                >
+                    <Text style={styles.buttonText}>
+                        {isLogin ? 'Login' : 'Register'}
+                    </Text>
+                </TouchableOpacity>
+            )}
 
-            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-                <Text>
+            <TouchableOpacity
+                style={styles.switchButton}
+                onPress={() => setIsLogin(!isLogin)}
+            >
+                <Text style={styles.switchButtonText}>
                     {isLogin
                         ? 'Need an account? Register'
                         : 'Already have an account? Login'}
@@ -79,32 +108,48 @@ export const Login = ({navigation}) => {
         </View>
     );
 };
+
 const styles = StyleSheet.create({
-    root: {
-        marginTop: 40,
-        marginBottom: 40
-    },
-    input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 10,
-        paddingHorizontal: 10,
-    },
-    button: {
-        backgroundColor: 'gray',
-        padding: 10,
-        marginBottom: 10,
-        alignItems: 'center',
-    },
     container: {
         flex: 1,
         justifyContent: 'center',
         padding: 20,
+        backgroundColor: '#f5f5f5',
     },
     title: {
         fontSize: 24,
         marginBottom: 20,
         textAlign: 'center',
+        fontWeight: 'bold',
+    },
+    input: {
+        height: 50,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        marginBottom: 15,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        backgroundColor: 'white',
+    },
+    button: {
+        backgroundColor: '#007bff',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    switchButton: {
+        marginTop: 15,
+        alignItems: 'center',
+    },
+    switchButtonText: {
+        color: '#007bff',
     },
 });
+
+export default Login;
