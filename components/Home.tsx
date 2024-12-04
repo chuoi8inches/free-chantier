@@ -1,21 +1,17 @@
-import {View,StyleSheet,Text} from "react-native";
-import {useAuth} from "@/context/AuthContext";
-import {databases} from "@/libs/appwrite";
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function Home() {
-    const promise = databases.listDocuments(
-        '67406116002f1b725118',
-        '6742206b0023d95cd635'
-    );
-    promise.then(function (response) {
-        console.log(response);
-    }, function (error) {
-        console.log(error);
-    });
+    const user = useUser();
+    //List all documents in a list view
     return (
         <View style={styles.container}>
             <Text>Welcome to your home screen</Text>
             <Text>If is a chef, see assigned project, if a responsable, see everything</Text>
+            <FlatList
+                data={promise}
+                // for each item in the list, separate each item then get name
+                renderItem={({ item }) => <Text>{item.name}</Text>}
+            />
         </View>
     );
 }

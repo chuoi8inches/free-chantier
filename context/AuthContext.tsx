@@ -1,8 +1,8 @@
 // src/context/AuthContext.tsx
-import React, {createContext, useState, useContext, ReactNode, useEffect} from 'react';
-import { Client, Account, ID, Models} from 'react-native-appwrite';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { Account, ID, Models } from 'react-native-appwrite';
 import { Alert } from 'react-native';
-import {account} from "@/libs/appwrite";
+import { account } from '@/libs/appwrite';
 
 // Define the shape of the authentication context
 interface AuthContextType {

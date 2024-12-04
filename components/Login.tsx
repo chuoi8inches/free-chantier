@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    Alert,
-    ActivityIndicator
-} from 'react-native';
-import { useAuth } from "@/context/AuthContext";
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
 
 export const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
