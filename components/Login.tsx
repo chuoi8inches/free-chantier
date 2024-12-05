@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
+import { Picker } from '@react-native-picker/picker';
+import { Role } from '@/utils/type';
 
 export const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState<Role>('chef');
     const [name, setName] = useState('');
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +32,7 @@ export const Login = ({ navigation }) => {
                 // Navigate based on role (you'll need to implement this logic)
                 navigation.navigate('Home');
             } else {
-                await register(email, password, name);
+                await register(email, password, name,role);
                 // After registration, navigate to home or complete profile
                 navigation.navigate('Home');
             }
@@ -47,13 +50,22 @@ export const Login = ({ navigation }) => {
             </Text>
 
             {!isLogin && (
-                <TextInput
-                    style={styles.input}
-                    placeholder="Full Name"
-                    value={name}
-                    onChangeText={setName}
-                    autoCapitalize="words"
-                />
+                <View>
+                    <Picker
+                      selectedValue={role}
+                      onValueChange={(itemValue) => setRole(itemValue)}
+                    >
+                        <Picker.Item label="Chef" value="chef" />
+                        <Picker.Item label="Responsable" value="responsable" />
+                    </Picker>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Full Name"
+                      value={name}
+                      onChangeText={setName}
+                      autoCapitalize="words"
+                    />
+                </View>
             )}
 
             <TextInput

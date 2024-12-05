@@ -2,7 +2,7 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Account, ID, Models } from 'react-native-appwrite';
 import { Alert } from 'react-native';
-import { account } from '@/libs/appwrite';
+import { account, DATABASE_ID, databases, USER_COLLECTION_ID } from '@/libs/appwrite';
 
 // Define the shape of the authentication context
 interface AuthContextType {
@@ -26,20 +26,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (session) {
                 const currentUser = await account.get();
                 setUser(currentUser);
-                // TODO: Navigate to home screen
-
             }
         } catch (error) {
             Alert.alert('Login Error', error instanceof Error ? error.message : 'An unknown error occurred');
             throw error;
         }
+        console.log(user);
     };
 
     // Register method
-    const register = async (email: string, password: string, name: string) => {
+    const register = async (email: string, password: string, name: string, role: string) => {
         try {
             // Create user account
-            await account.create(ID.unique(), email, password, name);
+            const currentUser = await account.create(ID.unique(), email, password, name);
+            // Use the user's Appwrite ID to create a linked entry in the custom collection
+            const userId = currentUser.$id;
+            const userDetails = {
+                userId: userId,
+                role: role,
+                name: currentUser.name,
+            }
+            console.log(userDetails);
+            //save in UserDetails collection
+            await databases.createDocument(
+              DATABASE_ID,
+              USER_COLLECTION_ID,
+              ID.unique(),
+              userDetails,
+            )
             // Login after registration
             await login(email, password);
         } catch (error) {

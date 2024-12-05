@@ -3,11 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider } from '@/context/AuthContext';
 import { Login } from '@/components/Login';
 import Home from '@/components/Home';
+import { SitesProvider } from '@/context/SiteContext';
 
 const Stack = createNativeStackNavigator();
 export default function Index() {
     return (
         <AuthProvider>
+          <SitesProvider>
                 <Stack.Navigator>
                     <Stack.Screen
                         name="Login"
@@ -21,6 +23,7 @@ export default function Index() {
                         options={{ title: "Home" }}
                     />
                 </Stack.Navigator>
+          </SitesProvider>
         </AuthProvider>
     );
 }

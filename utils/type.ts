@@ -32,3 +32,5 @@ interface Resource {
     availability: Date[]
 }
 type ResourceType ="vehicle" | "tool"
+
+export type { User, Team, Site, Status, Role, Resource, ResourceType }
