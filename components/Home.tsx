@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useSites } from '@/context/SiteContext';
 import { Resource, Status, Team, User } from '@/utils/type';
@@ -7,8 +7,7 @@ import { Resource, Status, Team, User } from '@/utils/type';
 
 export default function HomeScreen() {
   const user = useAuth();
-  const sites = useSites();
-
+  const {current:sites,add,remove} = useSites();
   const [name, setName] = useState("");
   const [status, setStatus] = useState<Status>("notstarted");
   const [client, setClient] = useState("");
@@ -21,65 +20,48 @@ export default function HomeScreen() {
 
   const [description, setDescription] = useState("");
   return (
-    <ScrollView>
-      {user.account ? (
-        <View style={styles.section}>
-          <Text style={styles.header}>Add site</Text>
-          <View>
-            <TextInput
-              style={styles.input}
-              placeholder="Title"
-              value={name}
-              onChangeText={(text) => setName(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Status"
-              value={status}
-              onChangeText={(text) => setStatus(text)}
-            />
-            <Button
-              title="Submit"
-              onPress={() =>
-                sites.add({
-                  name,
-                  status,
-                  client,
-                  start,
-                  duration,
-                  resources,
-                  team,
-                  medias,
-                  chef,
-                })
-              }
-            />
+    <View style={styles.container}>
+      <FlatList data={sites} renderItem={({ item }) => {
+        return (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>{item.name}</Text>
+            <Text style={styles.cardDescription}>{item.status}</Text>
+            <Button title="Remove" onPress={() => remove(item.$id)} />
           </View>
-        </View>
-      ) : (
-        <View style={styles.section}>
-          <Text>Please login to submit an idea.</Text>
-        </View>
-      )}
-      {/*<View style={styles.section}>
-        <Text style={styles.header}>Latest Ideas</Text>
-        <View>
-          {sites.current.map((idea) => (
-            <View key={idea.$id} style={styles.card}>
-              <Text style={styles.cardTitle}>{idea.title}</Text>
-              <Text style={styles.cardDescription}>{idea.description}</Text>
-               Show the remove button to idea owner.
-              {user.account && user.account.$id === idea.userId && (
-                <Button
-                  title="Remove"
-                  onPress={() => sites.remove(idea.$id)}
-                />
-              )}
+        )
+      }}/>
+      <ScrollView>
+        {user.account ? (
+          <View style={styles.section}>
+            <Text style={styles.header}>Add site</Text>
+            <View>
+              <TextInput
+                style={styles.input}
+                placeholder="Title"
+                value={name}
+                onChangeText={(text) => setName(text)}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Status"
+                value={status}
+                onChangeText={(text) => setStatus(text)}
+              />
+              <Button
+                title="Submit"
+                onPress={() =>
+                  add({name,status,client,start,duration,resources,team,medias,chef})
+                }
+              />
             </View>
-          ))}
-        </View>
-      </View>*/}
-    </ScrollView>
+          </View>
+        ) : (
+          <View style={styles.section}>
+            <Text>Please login to submit an idea.</Text>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 

@@ -1,6 +1,8 @@
-# Welcome to your Expo app 👋
+# Free Chantier - Application mobile pour la gestion et le suivi des chantiers
+## Dévéloppé par Huu Anh NGUYEN avec React-native et Appwrite
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+Il s'agit d'un [Expo](https://expo.dev) projet crée avec [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
 
@@ -16,35 +18,31 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Dans le terminal, vous avez l'option d'ouvrir l'application sur:
+- [Expo Go](https://expo.dev/go) recommandé, car c'est la plus simple et le developement est fait sur cette platform.
+Il suffit de scanner le QR code avec votre téléphone.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Stack technique
+Appwrite est choisie pour la gestion des utilisateurs et des données.
+React Native est utilisé pour le developpement de l'application mobile.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Modèle de données
+- User (Utilisateur) : soit chef ou responsable de chantier
+- Site (Chantier) projet de construction
+- Team (Equipe) : groupe d'employés
+- Resource (Ressource) : matériel, équipement, véhicule
 
-## Get a fresh project
+## Fonctionnalités implémentées
+- [x] Authentification
+- [ ] Gestion des chantiers
+- [ ] Gestion des équipes
+- [ ] Gestion des ressources
 
-When you're ready, run:
+Jusqu'au 6/12/2024, le projet est toujours en cours de développement. Il y a l'authentification qui est complète et fonctionnel,
+mais sur l'autre point, il reste encore beaucoup de travail à faire. La difficulté principale rencontrée est l'accès aux données. 
+Par exemple, pour afficher les chantiers affectés à un utilisateur, il faut faire une requête pour récupérer les chantiers,
+malgré avoir configuré les permissions sur Appwrite, j'ai toujours l'erreur que l'utilisateur n'est pas autorisé à accéder aux données.
+Cela a bloqué le développement de l'application. 
 
-```bash
-npm run reset-project
-```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

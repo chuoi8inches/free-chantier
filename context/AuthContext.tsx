@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Alert.alert('Login Error', error instanceof Error ? error.message : 'An unknown error occurred');
             throw error;
         }
-        console.log(user);
+        console.log('user',user);
     };
 
     // Register method
@@ -46,7 +46,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 role: role,
                 name: currentUser.name,
             }
-            console.log(userDetails);
             //save in UserDetails collection
             await databases.createDocument(
               DATABASE_ID,

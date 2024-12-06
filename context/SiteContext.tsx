@@ -1,7 +1,8 @@
-import { ID, Permission, Query, Role } from 'react-native-appwrite';
+import { ID, Permission, Role } from 'react-native-appwrite';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { DATABASE_ID, databases, SITE_COLLECTION_ID } from '@/libs/appwrite';
+import { account, DATABASE_ID, databases, SITE_COLLECTION_ID } from '@/libs/appwrite';
 import { toast } from '@/libs/toast';
+import { useAuth } from '@/context/AuthContext';
 
 // Define the shape of the site context
 interface SiteContextType {
@@ -13,16 +14,18 @@ interface SiteContextType {
 const SitesContext = createContext<SiteContextType|undefined>(undefined);
 
 export function SitesProvider(props) {
+  const {user} = useAuth();
   const [sites, setSites] = useState([]);
 
   async function add(site) {
+    console.log("Adding site", site);
     const response = await databases.createDocument(
       DATABASE_ID,
       SITE_COLLECTION_ID,
       ID.unique(),
-      site,
+      {...site},
       [Permission.write(Role.user(site.userId))]
-    );
+    )
     toast('Site added');
     setSites((sites) => [response, ...sites].slice(0, 10));
   }
@@ -35,20 +38,39 @@ export function SitesProvider(props) {
   }
 
   async function init() {
+    console.log("init called");
+    const session = await account.get();
+    console.log("Active session", session);
     const response = await databases.listDocuments(
       DATABASE_ID,
       SITE_COLLECTION_ID,
-      [Query.orderDesc("$createdAt"), Query.limit(10)]
-    );
+    ).catch((error) => {
+      console.error(error);
+      toast('Failed to fetch sites');
+      }
+    ).finally(() => {
+      console.log("Fetching sites done");
+    });
+    console.log("response", response);
     setSites(response.documents);
+    console.log("sites", sites);
   }
 
   useEffect(() => {
-    init();
-  }, []);
+    console.log("useEffect called");
+    if (user) {
+      console.log("User authenticated:", user);
+      console.log("Initializing SitesProvider");
+      init();
+    } else {
+      console.log("User not authenticated yet");
+    }
+  }, [user]);
+
+
 
   return (
-    <SitesContext.Provider value={{ current: sites, add, remove }}>
+    <SitesContext.Provider value={{ current: sites, add, remove}}>
       {props.children}
     </SitesContext.Provider>
   );
